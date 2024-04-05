@@ -1,0 +1,37 @@
+#circularcursor {
+    background-color: transparent;
+    border:1px solid black;    
+    height:25px;
+    width:25px;
+    border-radius:50%;
+    -moz-border-radius:50%;
+    -webkit-border-radius:50%;
+    position: absolute;
+    z-index: 1;
+  }
+
+.canvas-btn {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border-style: solid;
+    padding: 5px 5px 5px;
+    justify-content: space-between;
+    
+}
+
+.btn-width {
+    min-width: 100px;
+}
+
+.mouse-state {
+    cursor: none;
+}
+.outer{
+    padding: 50px 50px;
+    border-radius: 5px;
+    border-style: solid;
+    
+}
