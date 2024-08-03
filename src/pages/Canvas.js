@@ -1,26 +1,23 @@
-
 import React, { useRef, useState, useEffect } from "react";
-import './canvs.css'
-import io from 'socket.io-client'
+import "./canvs.css";
+import io from "socket.io-client";
 
 export default function Canvas() {
   const [isDrawing, setIsDrawing] = useState(false);
 
-  const[room,setroom]=useState("")
+  const [room, setroom] = useState("");
   const [color, setColor] = useState("#3B3B3B");
   const [size, setSize] = useState("3");
   const canvasRef = useRef(null);
   const ctx = useRef(null);
   const timeout = useRef(null);
   const [cursor, setCursor] = useState("default");
-//   //connection
-   const socket=io.connect("http://localhost:3001")
+  const socket = io.connect("http://localhost:3001");
 
   useEffect(() => {
     const canvas = canvasRef.current;
     ctx.current = canvas.getContext("2d");
 
-    
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
 
@@ -34,7 +31,6 @@ export default function Canvas() {
       };
       image.src = canvasimg;
     }
-
   }, [ctx]);
 
   const startPosition = ({ nativeEvent }) => {
@@ -54,7 +50,7 @@ export default function Canvas() {
     const canvas = canvasRef.current;
     ctx.current = canvas.getContext("2d");
     ctx.current.lineWidth = size;
-    
+
     ctx.current.lineCap = "round";
     ctx.current.strokeStyle = color;
 
@@ -67,7 +63,7 @@ export default function Canvas() {
     timeout.current = setTimeout(function () {
       var base64ImageData = canvas.toDataURL("image/png");
       localStorage.setItem("canvasimg", base64ImageData);
-      socket.emit('canvas-data',base64ImageData)
+      socket.emit("canvas-data", base64ImageData);
     }, 400);
   };
 
@@ -78,24 +74,19 @@ export default function Canvas() {
     context.fillStyle = "white";
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-  
     if (timeout.current !== undefined) clearTimeout(timeout.current);
     timeout.current = setTimeout(function () {
       var base64ImageData = canvas.toDataURL("image/png");
       localStorage.setItem("canvasimg", base64ImageData);
     }, 400);
   };
-  const join=()=>{
-    if(room!==""){
-      socket.emit("join_room",room)
-     
+  const join = () => {
+    if (room !== "") {
+      socket.emit("join_room", room);
+    } else {
+      console.log("fill the form");
     }
-    else{
-      console.log("fill the form")
-    }
-    
-  }
-  
+  };
 
   const getPen = () => {
     setCursor("default");
@@ -114,16 +105,8 @@ export default function Canvas() {
   };
   return (
     <div>
-        <div>
-        Enter the room code
-        <input value={room} onChange={(e)=>{setroom(e.target.value)}}/>
-       </div>
-       <div>
-        <button onClick={join}>Enter </button>
-       </div>
-     
-        <div className="canvas-btn">
-      <button onClick={getPen} className="btn-width">
+      <div className="canvas-btn">
+        <button onClick={getPen} className="btn-width">
           Pencil
         </button>
         <div className="btn-width">
@@ -158,16 +141,14 @@ export default function Canvas() {
           </button>
         </div>
       </div>
-      
+
       <canvas
-       style={{ cursor: cursor }}
+        style={{ cursor: cursor }}
         onMouseDown={startPosition}
         onMouseUp={finishedPosition}
         onMouseMove={draw}
         ref={canvasRef}
-      /> 
-
-   </div>
-    
-  )
+      />
+    </div>
+  );
 }
