@@ -4,15 +4,13 @@ import io from "socket.io-client";
 
 export default function Canvas() {
   const [isDrawing, setIsDrawing] = useState(false);
-
-  const [room, setroom] = useState("");
   const [color, setColor] = useState("#3B3B3B");
   const [size, setSize] = useState("3");
   const canvasRef = useRef(null);
   const ctx = useRef(null);
   const timeout = useRef(null);
   const [cursor, setCursor] = useState("default");
-  const socket = io.connect("http://localhost:3001");
+  const socket = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -23,15 +21,16 @@ export default function Canvas() {
 
     const canvasimg = localStorage.getItem("canvasimg");
     if (canvasimg) {
-      var image = new Image();
-      ctx.current = canvas.getContext("2d");
-      image.onload = function () {
+      const image = new Image();
+      image.onload = () => {
         ctx.current.drawImage(image, 0, 0);
         setIsDrawing(false);
       };
       image.src = canvasimg;
     }
-  }, [ctx]);
+
+    socket.current = io.connect("http://localhost:3001");
+  }, []);
 
   const startPosition = ({ nativeEvent }) => {
     setIsDrawing(true);
@@ -44,48 +43,38 @@ export default function Canvas() {
   };
 
   const draw = ({ nativeEvent }) => {
-    if (!isDrawing) {
-      return;
-    }
-    const canvas = canvasRef.current;
-    ctx.current = canvas.getContext("2d");
-    ctx.current.lineWidth = size;
+    if (!isDrawing) return;
 
+    const { clientX, clientY } = nativeEvent;
+
+    ctx.current.lineWidth = size;
     ctx.current.lineCap = "round";
     ctx.current.strokeStyle = color;
 
-    ctx.current.lineTo(nativeEvent.clientX, nativeEvent.clientY);
+    ctx.current.lineTo(clientX, clientY);
     ctx.current.stroke();
     ctx.current.beginPath();
-    ctx.current.moveTo(nativeEvent.clientX, nativeEvent.clientY);
+    ctx.current.moveTo(clientX, clientY);
 
     if (timeout.current !== undefined) clearTimeout(timeout.current);
-    timeout.current = setTimeout(function () {
-      var base64ImageData = canvas.toDataURL("image/png");
+    timeout.current = setTimeout(() => {
+      const base64ImageData = canvasRef.current.toDataURL("image/png");
       localStorage.setItem("canvasimg", base64ImageData);
-      socket.emit("canvas-data", base64ImageData);
+      socket.current.emit("canvas-data", base64ImageData);
     }, 400);
   };
 
   const clearCanvas = () => {
     localStorage.removeItem("canvasimg");
     const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    context.fillStyle = "white";
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.current.fillStyle = "white";
+    ctx.current.fillRect(0, 0, canvas.width, canvas.height);
 
     if (timeout.current !== undefined) clearTimeout(timeout.current);
-    timeout.current = setTimeout(function () {
-      var base64ImageData = canvas.toDataURL("image/png");
+    timeout.current = setTimeout(() => {
+      const base64ImageData = canvas.toDataURL("image/png");
       localStorage.setItem("canvasimg", base64ImageData);
     }, 400);
-  };
-  const join = () => {
-    if (room !== "") {
-      socket.emit("join_room", room);
-    } else {
-      console.log("fill the form");
-    }
   };
 
   const getPen = () => {
@@ -98,18 +87,18 @@ export default function Canvas() {
     setCursor("grab");
     setSize("20");
     setColor("#FFFFFF");
-
-    if (!isDrawing) {
-      return;
-    }
   };
+
   return (
     <div>
+      <div className="header">
+        Draw Anything !!
+      </div>
       <div className="canvas-btn">
-        <button onClick={getPen} className="btn-width">
+        <button onClick={getPen} className="btn btn-primary">
           Pencil
         </button>
-        <div className="btn-width">
+        <div className="color-picker btn">
           <input
             type="color"
             value={color}
@@ -118,25 +107,25 @@ export default function Canvas() {
         </div>
         <div>
           <select
-            className="btn-width"
+            className="btn btn-primary"
             value={size}
             onChange={(e) => setSize(e.target.value)}
           >
-            <option> 1 </option>
-            <option> 3 </option>
-            <option> 5 </option>
-            <option> 10 </option>
-            <option> 15 </option>
-            <option> 20 </option>
-            <option> 25 </option>
-            <option> 30 </option>
+            <option value="1"> 1 </option>
+            <option value="3"> 3 </option>
+            <option value="5"> 5 </option>
+            <option value="10"> 10 </option>
+            <option value="15"> 15 </option>
+            <option value="20"> 20 </option>
+            <option value="25"> 25 </option>
+            <option value="30"> 30 </option>
           </select>
         </div>
-        <button onClick={clearCanvas} className="btn-width">
+        <button onClick={clearCanvas} className="btn btn-danger">
           Clear
         </button>
         <div>
-          <button onClick={eraseCanvas} className="btn-width">
+          <button onClick={eraseCanvas} className="btn btn-secondary">
             Erase
           </button>
         </div>

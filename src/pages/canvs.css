@@ -1,37 +1,68 @@
-#circularcursor {
-    background-color: transparent;
-    border:1px solid black;    
-    height:25px;
-    width:25px;
-    border-radius:50%;
-    -moz-border-radius:50%;
-    -webkit-border-radius:50%;
-    position: absolute;
-    z-index: 1;
-  }
+.header {
+  font-family: "Arial", sans-serif;
+  font-size: 2.5em;
+  color: #ffffff;
+  background: linear-gradient(
+    90deg,
+    rgba(58, 123, 213, 1) 0%,
+    rgba(58, 213, 183, 1) 100%
+  );
+  padding: 20px;
+  text-align: center;
+  border-radius: 15px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  margin: 20px 0;
+  border-radius: 50px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.header:hover {
+  transform: scale(1.05);
+}
 
 .canvas-btn {
-    display: flex;
-    align-items: center;
-    margin-left: 10px;
-    margin-top: 10px;
-    border-radius: 5px;
-    border-style: solid;
-    padding: 5px 5px 5px;
-    justify-content: space-between;
-    
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+  gap: 10px;
 }
 
-.btn-width {
-    min-width: 100px;
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
-.mouse-state {
-    cursor: none;
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  border: 2px solid black;
 }
-.outer{
-    padding: 50px 50px;
-    border-radius: 5px;
-    border-style: solid;
-    
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+  border: 2px solid black;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+  border: 2px solid black;
+}
+
+.color-picker input {
+  width: 40px;
+  height: 40px;
+  border: none;
+  cursor: pointer;
+}
+
+canvas {
+  display: block;
+  margin: 0 auto;
+  border: 2px solid #343a40;
 }
